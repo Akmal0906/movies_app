@@ -8,14 +8,9 @@ import '../../widgets/elevated_button_widget.dart';
 import '../../widgets/my_textfield_widget.dart';
 import '../../widgets/top_widget.dart';
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 
-  @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
@@ -29,7 +24,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Text(
               AllText.loginText,
               style: customStyle.copyWith(
-                  fontSize: 20, fontWeight: FontWeight.w600),
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600),
             ),
             Expanded(
               child: ListView.builder(
@@ -42,6 +39,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     controller: controllerList[index],
                     labelText: labelTextList[index],
                     index: index,
+                    textColor: Colors.black,
                   );
                 },
               ),
@@ -51,73 +49,71 @@ class _SignUpScreenState extends State<SignUpScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 elevatedButtonWidget(context, () {
-                  signup(emailController.text.trim(), passwordController.text.trim(),context);
-                }, Size(size.width - 50, 46),
-                    'Sign up', Colors.grey.shade400),
+                  signup(emailController.text.trim(),
+                      passwordController.text.trim(), context);
+                }, Size(size.width - 50, 46), 'Sign up', Colors.grey.shade400),
                 const SizedBox(
                   height: 22,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.only(
-                            top: 6, bottom: 6, left: 20, right: 18),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border:
-                              Border.all(width: 1, color: Colors.grey.shade600),
-                        ),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/google.svg',
-                              fit: BoxFit.cover,
-                              height: 29,
-                              width: 29,
-                            ),
-                            const SizedBox(
-                              width: 11,
-                            ),
-                            Text(
-                              'Google',
-                              style: customStyle.copyWith(
-                                  fontSize: 17, fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
+                    Container(
+                      padding: const EdgeInsets.only(
+                          top: 6, bottom: 6, left: 20, right: 18),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border:
+                            Border.all(width: 1, color: Colors.grey.shade600),
+                      ),
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/icons/google.svg',
+                            fit: BoxFit.cover,
+                            height: 29,
+                            width: 29,
+                          ),
+                          const SizedBox(
+                            width: 11,
+                          ),
+                          Text(
+                            'Google',
+                            style: customStyle.copyWith(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black),
+                          ),
+                        ],
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.only(
-                            top: 6, bottom: 6, left: 20, right: 18),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border:
-                              Border.all(width: 1, color: Colors.grey.shade600),
-                        ),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/facebook.svg',
-                              fit: BoxFit.cover,
-                              height: 29,
-                              width: 29,
-                            ),
-                            const SizedBox(
-                              width: 11,
-                            ),
-                            Text(
-                              'Facebook',
-                              style: customStyle.copyWith(
-                                  fontSize: 17, fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
+                    Container(
+                      padding: const EdgeInsets.only(
+                          top: 6, bottom: 6, left: 20, right: 18),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border:
+                            Border.all(width: 1, color: Colors.grey.shade600),
+                      ),
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            'assets/icons/facebook.svg',
+                            fit: BoxFit.cover,
+                            height: 29,
+                            width: 29,
+                          ),
+                          const SizedBox(
+                            width: 11,
+                          ),
+                          Text(
+                            'Facebook',
+                            style: customStyle.copyWith(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -136,7 +132,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               color: Colors.blueAccent, fontSize: 18),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              GoRouter.of(context).pushNamed('signin');
+                              GoRouter.of(context)
+                                  .pushReplacementNamed('signin');
                             }),
                     ],
                   ),
@@ -153,14 +150,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 }
 
-void signup(String email, String password,BuildContext context) {
+void signup(String email, String password, BuildContext context) {
   try {
-    print('try working');
+
     FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password).then((value) => print('Value ${value.additionalUserInfo}'));
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((value) => print('Value ${value.additionalUserInfo}'))
+        .onError((error, stackTrace) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Someting went wrong'),
+        duration: Duration(seconds: 2),
+      ));
+    });
   } on FirebaseAuthException catch (e) {
-    print('FirebaseException $e');
   }
 
-  GoRouter.of(context).pushReplacementNamed('main');
+  context.pushNamed('main');
 }

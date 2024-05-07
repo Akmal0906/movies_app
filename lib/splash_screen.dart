@@ -19,14 +19,14 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 500))
+        vsync: this, duration: const Duration(milliseconds: 600))
       ..repeat();
-    nextScreen();
+   nextScreen();
   }
 
   void nextScreen() {
     Future.delayed(const Duration(seconds: 3), () {
-      GoRouter.of(context).pushReplacementNamed('introduce');
+      context.goNamed('introduce');
     });
   }
   @override

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:movies_app/presentation/widgets/elevated_button_widget.dart';
 import 'package:movies_app/presentation/widgets/my_textfield_widget.dart';
 import 'package:movies_app/presentation/widgets/top_widget.dart';
-
 import '../../../utilis/all_text.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -45,7 +45,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     size: size,
                     controller: controllerList[index],
                     labelText:
-                        index == 0 ? labelTextList[index] : labelTextList[2],
+                        index == 0 ? labelTextList[index+1] : labelTextList[2],
                     index: index);
               },
             ),
@@ -53,7 +53,10 @@ class _SignInScreenState extends State<SignInScreen> {
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                elevatedButtonWidget(context, (){signin(context,userNameController.text.trim(),emailController.text.trim());}, Size(size.width - 50, 46), 'Sign In', Colors.grey.shade400),
+                elevatedButtonWidget(context, () {
+                  signin(context, userNameController.text.trim(),
+                      emailController.text.trim());
+                }, Size(size.width - 50, 46), 'Sign In', Colors.grey.shade400),
                 const SizedBox(
                   height: 24,
                 ),
@@ -63,12 +66,12 @@ class _SignInScreenState extends State<SignInScreen> {
                     style: const TextStyle(color: Colors.black, fontSize: 18),
                     children: <TextSpan>[
                       TextSpan(
-                          text: ' Sign up',
+                          text: 'Sign up',
                           style: const TextStyle(
                               color: Colors.blueAccent, fontSize: 18),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              GoRouter.of(context).pushNamed('signin');
+                              GoRouter.of(context).pushNamed('signup');
                             }),
                     ],
                   ),
@@ -84,18 +87,45 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 }
-signin(BuildContext context,String email,String password)async{
-  print('EMAIL $email password= $password');
-  showDialog(context: context,barrierDismissible: false, builder: (context)=>const Center(
-    child: CircularProgressIndicator(),
-  ));
-  try{
-    print('try working');
-    FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
 
-  }catch(e){
-print('catch working $e');
+signin(BuildContext context, String email, String password) async {
+  showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        Timer(const Duration(seconds: 2), () {
+          Navigator.of(context).pop();
+        });
+        return const Center(
+            child: CircularProgressIndicator(),
+          );});
+  try {
+    if (email.endsWith('@gmail.com')) {
+      FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((value) {
+        GoRouter.of(context).pushReplacementNamed('mainpage');
+
+
+
+      }).onError((error, stackTrace) {
+          userNameController.clear();
+          emailController.clear();
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Something went wrong'),duration: Duration(seconds: 2),));
+      });
+    } else {
+      print(false);
+      userNameController.clear();
+      emailController.clear();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please check email'),
+        duration: Duration(seconds: 2),
+      ));
+    }
+  }  catch (error) {
+
+
+
   }
 
-  GoRouter.of(context).pushReplacementNamed('mainpage');
 }

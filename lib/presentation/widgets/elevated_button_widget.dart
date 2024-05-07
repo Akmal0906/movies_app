@@ -14,7 +14,7 @@ elevatedButtonWidget(BuildContext context, void Function() onPressed, Size size,
               topRight: Radius.circular(10),
               bottomRight: Radius.circular(24)),
         )),
-    onPressed: onPressed,
+    onPressed: (){onPressed();},
     child: Text(
       text,
       style: customStyle.copyWith(
